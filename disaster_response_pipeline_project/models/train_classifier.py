@@ -12,6 +12,7 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords  
 
 from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.multioutput import MultiOutputClassifier
@@ -30,7 +31,7 @@ def load_data(database_filepath):
 
     X = df['message']
     Y = df.iloc[:,4:40]
-    category_names= Y.columns.to_list()
+    category_names= [Y.columns]
 
     return X, Y, category_names
 
@@ -62,9 +63,19 @@ def build_model():# I need some help and feedback here
     ('clf', MultiOutputClassifier(KNeighborsClassifier()))
     ])
 
-    ## falta um gridsearch aqui
+    parameters = {
+        # 'vect__max_df': (0.5, 0.75),
+        'vect__max_features': (1000, 3000),
+        # 'vect__ngram_range': ((1,1),(1,2)) ,
+        # 'tfidf__use_idf': (True,False),
+        'clf__estimator__n_neighbors': (3,5),
+        # 'clf__estimator__weights': ('uniform','distance'),
+        # 'clf__estimator__metric': ('minkowski','euclidean')
+    
+        }
 
-    return pipeline
+    cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=4)
+    return cv
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
@@ -114,4 +125,7 @@ if __name__ == '__main__':
     main()
 
 # estando em Disaster-Response-Pipeline
+# git lfs track disaster_response_pipeline_project/models/classifier.pkl
 # python disaster_response_pipeline_project//models//train_classifier.py DataBase.db disaster_response_pipeline_project//models//classifier.pkl
+
+# python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl

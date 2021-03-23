@@ -42,8 +42,8 @@ def clean_data(df):
 
 def save_data(df, database_filename):
     
-    engine = create_engine('sqlite:///DataBase.db') #nome do arquivo
-    df.to_sql(database_filename, engine, index=False) #nome da tabela
+    engine = create_engine('sqlite:///' + database_filename) #nome do arquivo
+    df.to_sql('merged_df', engine, index=False) #nome da tabela
 
 
 def main():
@@ -77,4 +77,6 @@ if __name__ == '__main__':
 
 
 # estando em Disaster-Response-Pipeline
-# python disaster_response_pipeline_project//data//process_data.py disaster_response_pipeline_project//data//disaster_messages.csv disaster_response_pipeline_project//data//disaster_categories.csv 'merged_df.db'
+# python disaster_response_pipeline_project//data//process_data.py disaster_response_pipeline_project//data//disaster_messages.csv disaster_response_pipeline_project//data//disaster_categories.csv merged_df.db
+
+# python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db

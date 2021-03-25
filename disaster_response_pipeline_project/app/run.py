@@ -1,36 +1,53 @@
 import json
 import plotly
 import pandas as pd
+import re
 
-from nltk.stem import WordNetLemmatizer
+
+import nltk
 from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords  
 
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+import joblib
+# from sklearn.externals import joblib
+
 from sqlalchemy import create_engine
 
 
 app = Flask(__name__)
 
+stop_words = set(stopwords.words('english'))
+
 def tokenize(text):
-    tokens = word_tokenize(text)
+    url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+
+    detected_urls = re.findall(url_regex, text)
+
+    for url in detected_urls:
+        text = text.replace(url, "urlplaceholder")
+
+        
     lemmatizer = WordNetLemmatizer()
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
+    tokens = nltk.wordpunct_tokenize(text)
+    text = nltk.Text(tokens)
 
-    return clean_tokens
+    clean_tokens = [lemmatizer.lemmatize(w).lower().strip() for w in text if w.isalpha()]
+    filtered_tokens = [w for w in clean_tokens if not w in stop_words]  
+
+
+    return filtered_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
+df = pd.read_sql_table('merged_df', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -45,7 +62,7 @@ def index():
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
-    graphs = [
+    graphs = [ 
         {
             'data': [
                 Bar(
@@ -98,3 +115,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# python app/run.py

@@ -9,7 +9,6 @@ import re
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-from nltk.corpus import stopwords  
 
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
@@ -19,9 +18,7 @@ from sklearn.multioutput import MultiOutputClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
-nltk.download('stopwords')
 nltk.download('wordnet')
-stop_words = set(stopwords.words('english'))
 
 def load_data(database_filepath):
 

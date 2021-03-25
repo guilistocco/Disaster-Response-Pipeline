@@ -43,7 +43,7 @@ def tokenize(text):
     return filtered_tokens
 
 # load data
-engine = create_engine('sqlite:///'+'../data/DisasterResponse.db')
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('merged_df', engine)
 
 # load model
@@ -115,3 +115,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# python app/run.py

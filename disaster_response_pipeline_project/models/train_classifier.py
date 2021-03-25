@@ -26,7 +26,7 @@ stop_words = set(stopwords.words('english'))
 def load_data(database_filepath):
 
     engine = create_engine('sqlite:///'+ database_filepath) #nome do arquivo
-    df = pd.read_sql_table('merged_df', engine) #nome da tabela
+    df = pd.read_sql_table("merged_df", engine) #nome da tabela
 
 
     X = df['message']
@@ -50,10 +50,9 @@ def tokenize(text):
     text = nltk.Text(tokens)
 
     clean_tokens = [lemmatizer.lemmatize(w).lower().strip() for w in text if w.isalpha()]
-    filtered_tokens = [w for w in clean_tokens if not w in stop_words]  
 
 
-    return filtered_tokens
+    return clean_tokens
 
 
 def build_model():# I need some help and feedback here
@@ -65,7 +64,7 @@ def build_model():# I need some help and feedback here
 
     parameters = {
         # 'vect__max_df': (0.5, 0.75),
-        'vect__max_features': (1000, 3000),
+        # 'vect__max_features': (1000, 3000),
         # 'vect__ngram_range': ((1,1),(1,2)) ,
         # 'tfidf__use_idf': (True,False),
         'clf__estimator__n_neighbors': (3,5),
@@ -74,7 +73,7 @@ def build_model():# I need some help and feedback here
     
         }
 
-    cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=4)
+    cv = GridSearchCV(pipeline, param_grid=parameters)
     return cv
 
 

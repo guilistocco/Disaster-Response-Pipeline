@@ -43,7 +43,7 @@ def clean_data(df):
 def save_data(df, database_filename):
     
     engine = create_engine('sqlite:///' + database_filename) #nome do arquivo
-    df.to_sql('merged_df', engine, index=False) #nome da tabela
+    df.to_sql("merged_df", engine, index=False) #nome da tabela
 
 
 def main():

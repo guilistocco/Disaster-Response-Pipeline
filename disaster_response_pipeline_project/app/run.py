@@ -7,7 +7,6 @@ import re
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-from nltk.corpus import stopwords  
 
 from flask import Flask
 from flask import render_template, request, jsonify
@@ -20,7 +19,6 @@ from sqlalchemy import create_engine
 
 app = Flask(__name__)
 
-stop_words = set(stopwords.words('english'))
 
 def tokenize(text):
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
@@ -37,10 +35,9 @@ def tokenize(text):
     text = nltk.Text(tokens)
 
     clean_tokens = [lemmatizer.lemmatize(w).lower().strip() for w in text if w.isalpha()]
-    filtered_tokens = [w for w in clean_tokens if not w in stop_words]  
 
 
-    return filtered_tokens
+    return clean_tokens
 
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
@@ -72,7 +69,7 @@ def index():
             ],
 
             'layout': {
-                'title': 'Distribution of Message Genres',
+                'title': 'Distribution of Message types',
                 'yaxis': {
                     'title': "Count"
                 },
@@ -116,5 +113,13 @@ def main():
 if __name__ == '__main__':
     main()
 
+    
+#     Here are the steps:
+# 1. Run the web app inside the 5_deployment folder. In the terminal, use this command to get the link for vieweing the app:
+# env | grep WORK
 
+# The link wil be:
+# http://WORKSPACESPACEID-3001.WORKSPACEDOMAIN replacing WORKSPACEID and WORKSPACEDOMAIN with your values.
+
+# To run the web app, go into the Terminal and type:
 # python app/run.py

@@ -83,6 +83,7 @@ Disaster-Response-Pipeline/
 │   └── README.md
 ├── .gitattributes
 ├── .gitignore
+├── environment.yml
 ├── DataBase.db
 ├── LICENSE
 └── README.md

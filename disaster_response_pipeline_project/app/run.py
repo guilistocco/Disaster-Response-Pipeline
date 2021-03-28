@@ -2,9 +2,14 @@ import json
 import plotly
 import pandas as pd
 import re
+import string
+from nltk.corpus import stopwords
+
+
 
 
 import nltk
+nltk.download('stopwords')
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
@@ -18,6 +23,9 @@ from sqlalchemy import create_engine
 
 
 app = Flask(__name__)
+
+
+
 
 
 def tokenize(text):
@@ -47,6 +55,22 @@ df = pd.read_sql_table('merged_df', engine)
 model = joblib.load("../models/classifier.pkl")
 
 
+# extract data needed for visuals
+genre_counts = df.groupby('genre').count()['message']
+genre_names = list(genre_counts.index)
+
+df_categories = df.drop(['id'], axis=1)._get_numeric_data()
+top_categories_pcts = df_categories.sum().sort_values(ascending=False).head(10)
+top_categories_names = list(top_categories_pcts.index)
+
+words = df.message.str.cat(sep=' ').lower().translate(str.maketrans('', '', string.punctuation)).split()
+df_words = pd.Series(words)
+top_words = df_words[~df_words.isin(stopwords.words("english"))].value_counts().head(10)
+top_words_names = list(top_words.index)
+
+
+
+
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
@@ -59,7 +83,7 @@ def index():
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
-    graphs = [ 
+    graphs = [
         {
             'data': [
                 Bar(
@@ -69,12 +93,48 @@ def index():
             ],
 
             'layout': {
-                'title': 'Distribution of Message types',
+                'title': 'Distribution of Message Genres',
                 'yaxis': {
                     'title': "Count"
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=top_words_names,
+                    y=top_words
+                )
+            ],
+
+            'layout': {
+                'title': 'Top 10 Message Words',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Word"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=top_categories_names,
+                    y=top_categories_pcts
+                )
+            ],
+
+            'layout': {
+                'title': 'Top 10 Message Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Category"
                 }
             }
         }
@@ -83,6 +143,76 @@ def index():
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
+    ####################################
+
+#     ####### VARIABLE CALCULATION #######
+#     messages = df['message']
+#     carac_raw = list()
+#     tokens_raw = list()
+#     tokens_proces = list()
+
+#     for i in range(len(messages)):
+
+#         #caracteres por descrição
+#         carac_raw.append(len(messages[i]))
+
+#         # tokens eh uma lista de strings
+#         tokens = nltk.word_tokenize(messages[i])
+
+#         tokens_raw.append(len(tokens))
+
+#         # words contem so palavras, siglas. Nao inclui pontuação
+#         words = [word for word in tokens if word.isalpha()]
+
+#         # contem o numero de palavras por descricao 
+#         n_palavras = len(words)
+
+#         # proporcao de palavras entre os tokens
+#         try:
+#             prop_palavras = n_palavras/len(tokens)
+#         except:
+#             prop_palavras = 0
+
+#         # words_len tem o tamanho de cada palavra
+#         words_len = [len(worddd) for worddd in words]
+
+        
+#     fig = px.histogram(carac_raw,nbins=20)
+#     fig.show()
+    
+    
+#     graphs2 = [ 
+#         {
+#             'data': [
+#                 Bar(
+#                     x=genre_names,
+#                     y=genre_counts
+#                 )
+#             ],
+
+#             'layout': {
+#                 'title': 'Distribution of Message types',
+#                 'yaxis': {
+#                     'title': "Count"
+#                 },
+#                 'xaxis': {
+#                     'title': "Genre"
+#                 }
+#             }
+#         }
+#     ]
+    
+#     # encode plotly graphs in JSON
+#     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
+#     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+
+
+#     fig = px.histogram(carac_raw,nbins=20)
+#     fig.show()
+    
+    #################################
     
     # render web page with plotly graphs
     return render_template('master.html', ids=ids, graphJSON=graphJSON)
@@ -123,3 +253,5 @@ if __name__ == '__main__':
 
 # To run the web app, go into the Terminal and type:
 # python app/run.py
+
+## http://view6914b2f4-3001.udacity-student-workspaces.com

@@ -10,18 +10,23 @@ Started on Mar, 2021.
  
  
 ## Why this is an important project?
-In a Big Data context, which we live in, there are many data to manipulate, but not much knowledge. With this project I tried to show my my skills on all steps of the ETL Process. It starts manipulating data from csv files, changing data types, removing duplicated values and ends saving all into a SQL database.
-As an engineer student, I saw the oportunity to use data science in a traffic context. The porpuse of this project is to reflect about a few assumptions every one that uses public or private transportation wonder: Does cars on the left lane run faster? Does heavy vehicles alwyas stay on right lanes? How can we predict the speed of new cars? Those questions were answered using data science skills.
+In a Big Data context which we live in, there are much data, but not much knowledge. With this project I tried to show my skills on all steps of the ETL Process. It starts manipulating data from csv files, changing data types, removing duplicated values and ends saving all into a SQL database.
+
+In adition, a web app is created to show some results obtained from the data. To do so Plotly makes data vizualizations and Flask along Boostrap make the app design.
+
 
 ## Summary of analysis
+This project is capable of getting message and returning what it refers to in terms of themes as water shortage, huricanes and medical help.
 
+Going deeper into analysis, the graphs show the distribution of tokens (mostly words) and caracters of each message of the training set 
 
 
 ## Libraries
 * Pandas
 * Numpy
 * SQLAlchemy
-* 
+* Flask
+* Bootstrap
 * Scikit Learn (a lot!)
 
 

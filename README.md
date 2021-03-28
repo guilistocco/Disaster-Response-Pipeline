@@ -52,8 +52,11 @@ Going deeper into analysis, the graphs show the distribution of tokens (mostly w
 3. Go to http://0.0.0.0:3001/
 
 
+## Directory
+
+
 Disaster-Response-Pipeline/
-'''
+```
 .
 ├── ETL-PROCESS/
 │   ├── ETL-pipeline.ipynb
@@ -83,7 +86,7 @@ Disaster-Response-Pipeline/
 ├── DataBase.db
 ├── LICENSE
 └── README.md
-'''
+```
 
 ## Acknowledgements
 

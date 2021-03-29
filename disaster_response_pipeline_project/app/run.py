@@ -256,3 +256,5 @@ if __name__ == '__main__':
 # python app/run.py
 
 ## http://view6914b2f4-3001.udacity-student-workspaces.com
+
+## message example: I would like to receive the messages, thank you

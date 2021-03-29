@@ -257,4 +257,4 @@ if __name__ == '__main__':
 
 ## http://view6914b2f4-3001.udacity-student-workspaces.com
 
-## message example: I would like to receive the messages, thank you
+## message example: Weather update - a cold front from Cuba that could pass over Haiti

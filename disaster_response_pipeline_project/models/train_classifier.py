@@ -22,10 +22,25 @@ nltk.download('wordnet')
 
 def load_data(database_filepath):
 
+
+    """
+    Takes a database path and loads data into variables
+
+    Parameters:
+        database_filepath: Path pointing to the database
+
+    Returns:
+        X: DataFrame containing the features
+        Y: DataFrame containing the labels
+        category_names: DataFrame containing the labels names
+    """
+
+
     engine = create_engine('sqlite:///'+ database_filepath) #nome do arquivo
     df = pd.read_sql_table("merged_df", engine) #nome da tabela
 
-
+    ## separate messages from categories to create new features based on 
+    ## words from messages with help from CountVectorizer
     X = df['message']
     Y = df.iloc[:,4:40]
     category_names= [Y.columns]
@@ -34,8 +49,23 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """
+    Custom tokenizer function to realize the desired tokenization 
+    for an specific set of text data
+
+    Parameters:
+        database_filepath: path to database
+
+    Returns:
+        clean_tokens: tokens after processing
+    
+    """
+
+
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 
+    ## detects URLs on messages and change to "urlplaceholder" to avoid 
+    ## tokenization errors
     detected_urls = re.findall(url_regex, text)
     for url in detected_urls:
         text = text.replace(url, "urlplaceholder")
@@ -52,13 +82,27 @@ def tokenize(text):
     return clean_tokens
 
 
-def build_model():# I need some help and feedback here
+def build_model():
+
+    """
+    Creates a pipeline object with processing, normalization, feature 
+    creation and modeling with tuned hyperparameters acquired with Grid Search
+
+    Returns:
+        GridSearchCV: the model
+    """
+
+
+
     pipeline = Pipeline([
     ('vect', CountVectorizer(tokenizer=tokenize)),
     ('tfidf', TfidfTransformer()),
     ('clf', MultiOutputClassifier(KNeighborsClassifier()))
     ])
 
+
+    ## many parameters can be tested, but only n_neighbors is tested 
+    ## in order to gain computer efficiency
     parameters = {
         # 'vect__max_df': (0.5, 0.75),
         # 'vect__max_features': (1000, 3000),
@@ -76,13 +120,41 @@ def build_model():# I need some help and feedback here
 
 def evaluate_model(model, X_test, Y_test, category_names):
 
+    """
+    Takes a trained model and predicts it to return its score for the
+    test data for each category. Display f1 score, precision and recall
+    for each category of the dataset
+
+    Parameters:
+        model: The target model
+        X_test: Test features
+        y_test: Test labels
+        category_names: The names of the categories
+    """
+
     y_pred = model.predict(X_test)
+
+    ## prints f1 score, precision and recall for each category of the dataset
+
     for i,col in enumerate(Y_test.columns):
+
         print(classification_report(Y_test[col], y_pred[:,i]))
 
     pass
 
 def save_model(model, model_filepath):
+
+    """
+    Save the trained model to the provided filepath with help from
+    pickle module
+
+    
+    Parameters:
+        model: Fine tuned pipeline model
+        model_filepath: The path to save the model
+
+    """
+
 
     filename = model_filepath
     pickle.dump(model, open(filename, 'wb'))
@@ -90,6 +162,13 @@ def save_model(model, model_filepath):
 
 
 def main():
+
+    """
+
+
+    """
+
+
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))

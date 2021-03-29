@@ -7,6 +7,8 @@ Started on Mar, 2021.
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/guilistocco/Disaster-Response-Pipeline/master)
 
+
+![Test Image 1](disaster_response_pipeline_project/app/templates/Images/web_app_home.png)
  
  
 ## Why this is an important project?

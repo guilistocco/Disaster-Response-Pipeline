@@ -5,19 +5,55 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+
+    """
+
+    Loads data from .csv file on filepath provided and merge both messages
+    and categories dataframes
+
+
+    Parameters:
+        messages_filepath: Path pointing to the messages dataset
+        categories_filepath: Path pointing to the categories dataset
+
+    Returns:
+        df: merged DataFrame
+    """
+
+
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = messages.merge(categories, how='inner', on='id')
+    df = df[df['related']<= 1]
+
 
     return df
 
 
 
 def clean_data(df):
+    """
+    Cleans data, remove duplicates, creates new columns and change data types
+
+    Parameters:
+        df: DataFrame to be cleaned
 
 
+    Returns:
+        df: cleaned DataFrame
+
+    """
+
+    ## df has am inefficient catogorization
+    ## So, the 'categories' column is used to get the columns names
+   
     categories = df.categories.str.split(pat=';',expand=True)
+   
+    ## to do so, only the data from one row is manipulated to generate 
+    ## columns names
     row = categories.loc[0]
+
+    ## strips only the last 2 characters
     category_colnames = row.str[:-2]
     categories.columns = category_colnames
 
@@ -41,12 +77,30 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+
+    """
+    Takes a clean dataframe with concatenated columns and save it into a
+    table inside of a SQL database stored on database_filename provided
+
+    Parameters:
+        df: The DataFrame to persist
+        database_filename: The database name
+
+    """
     
     engine = create_engine('sqlite:///' + database_filename) #nome do arquivo
-    df.to_sql("merged_df", engine, index=False) #nome da tabela
+    df.to_sql("merged_df", engine, index=False, if_exists='replace') #nome da tabela
 
 
 def main():
+
+    """
+    Main function of the program
+
+    Parse the arguments from terminal and returns the currently step
+    """
+
+
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
